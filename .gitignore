@@ -1,0 +1,6 @@
+deploy-magic.h
+uki.efi
+BOOTX64.EFI
+deploy
+busybox_UDHCPC
+busybox_WGET
