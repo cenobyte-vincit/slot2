@@ -53,7 +53,7 @@ If `kexec` fails, stage 1 continues on the UKI kernel. The box stays bootable.
 
 ## Payload
 
-The implant is `98-payload.sh`, a dracut pre-pivot hook inside the bootkit UKI. It is not a post-boot userspace service. This tree's implementation is a demo: remount `/sysroot` read-write, write `/root/HELLO.TXT`, bring NICs up, DHCP, then `wget` ifconfig.me (5s budget). Network failure does not block `kexec`.
+The implant is `98-payload.sh`, a dracut pre-pivot hook inside the bootkit UKI. It is not a post-boot userspace service. This tree's implementation is a demo: remount `/sysroot` read-write, write `/root/HELLO.TXT`, bring NICs up, DHCP, then `wget` ifconfig.me (5s budget). The DHCP lease and resolver file stay in the initrd (`/tmp/udhcpc.*.lease`, `/etc/resolv.conf`); they are not written onto the real root. Network failure does not block `kexec`.
 
 Stage 1 has the real root at `/sysroot` (typically XFS, remounted rw). `/boot` is `/sysroot/boot`. Extra EBS volumes are not mounted unless the hook mounts them. The slim initrd ships busybox `udhcpc` and `wget`. `ip(8)` is the real-root binary, run via the initrd loader.
 

@@ -150,7 +150,7 @@ Dracut *sources* pre-pivot hooks. `98-payload.sh` and `99-kexec-stock.sh` must `
 
 `98-payload.sh` remounts `/sysroot` read-write, appends `/proc/cmdline` and a banner to `/sysroot/root/HELLO.TXT`, then attempts network inside a 5 second budget. Network failure never blocks boot or kexec.
 
-Network path: bind `/sysroot/lib/modules` and `modprobe ena` (then `virtio_net` / `xen_netfront`), bring non-`lo` ifaces up, run injected `udhcpc` (`-f -n -q -t 3 -T 1 -A 0`), apply the lease with `run_ip`, then `wget -q -T 5 -O - http://ifconfig.me/ip`. Busybox wget reads initrd `/etc/resolv.conf` (copied from `/sysroot` if needed). The GET is an example endpoint; the body proves outbound reachability before stock userspace.
+Network path: bind `/sysroot/lib/modules` and `modprobe ena` (then `virtio_net` / `xen_netfront`), bring non-`lo` ifaces up, run injected `udhcpc` (`-f -n -q -t 3 -T 1 -A 0`), apply the lease with `run_ip`, then `wget -q -T 5 -O - http://ifconfig.me/ip`. The lease is `/tmp/udhcpc.*.lease` in the initrd. Busybox wget reads initrd `/etc/resolv.conf` (written by the DHCP script, or copied from stock `/sysroot/etc/resolv.conf` into the initrd if that file is empty). Neither the lease nor resolv.conf is written onto the real root; `/root/HELLO.TXT` is the only real-root artefact from this payload. The GET is an example endpoint; the body proves outbound reachability before stock userspace.
 
 Pre-OS NIC, DHCP, and HTTP run before auditd, eBPF host sensors, and other agents that load with userspace. The same traffic is visible on the network: VPC Flow Logs, DNS query logs (this tree resolves `ifconfig.me`), cloud or firewall connection logs, NIDS or a proxy on the path, and local-link DHCP.
 
